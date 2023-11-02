@@ -162,13 +162,109 @@ A tak wygląda przykładowy wykres dla metody geometrycznej:
 
 Opis zaimplementowanej gry "Catch the coins" oraz zauważonych problemów z losowością. Opis celu gry i dlaczego akurat taką. Parę klatek z gry, wykorzystane technologie.
 
+Sprawdźmy teraz czy ta cała teoria ma swoje odzwierciedlenie w rzeczywistości. Do tego celu posłuży nam gra "Catch the coins".
+Pierwsza wersja gry polegała na łapaniu spadających monet. Gracz znajdował się na dole ekranu, a z góry losowo spadałyby monety. Celem gry było złapanie jak najwięcej monet w określonym czasie. Dlaczego więc zrezygnowano z tej wersji gry? Losowość.
+Uczenie przez wzmacnianie bardzo słabo radzi sobie z losowością. Przypomijmy sobie jak aktualizuje się wartości w Q-Tabeli.
+
+\[ Q(s, a) =  (1 - \alpha )*Q(s, a) + \alpha * ( r(s, a) + \gamma * \max_{a'}Q(s', a') )\]
+
+Problemem jest moment, gdy musimy "podejrzeć" najlepszą akcję w następnym stanie. Polega to na fakcie, że w danym stanie ta sama akcja zawsze prowadzi to takiego samego stanu. Jeżeli jednak gra ma elementy losowe, nie możemy tego przewidzieć z absolutną pewnością. Z tego powodu ta metoda nie sprawdzi się w tej sytuacji. Druga wersja gry została stworzona aby nie mieć tego problemu. Innymi słowy, jest całkowicie deterministyczna.
+\newline \newline
+Nowa wersja gry rozgrywa się na planszy m x n. Gracz startuje w wyznaczonym miejscu na tej planszy. Na planszy znajduje się również pole wyjściowe, do którego gracz ma za zadanie dojść w jak najmniejszej liczbie kroków, poruszając się w górę, dół, prawo lub lewo jedno pole co ruch. Na planszy znajdują się również inne obiekty, mianowicie "dobre" i "złe" monety. Gracz dostaje punkty jeżeli zbierze dobrą monetę, oraz traci punkty jeżeli zbierze złą monetę. Zadaniem gracza jest więc zebranie dobrych monet, unikanie złych oraz dojście do celu w jak najmniejszej liczbie kroków.
+\newline Przykładowe plansze startowe: \newline
+\includegraphics[width=70mm]{przyklad1.png}
+\includegraphics[width=70mm]{przyklad2.png} \newline
+\includegraphics[width=20mm]{player.png} - Gracz (Agent). Jego zadaniem jest zbieranie dobrych monet, unikanie złych monet i dojście do celu \newline
+\includegraphics[width=20mm]{good_coin.png} - Dobra moneta \newline
+\includegraphics[width=20mm]{bad_coin.png} - Zła moneta\newline
+\includegraphics[width=20mm]{exit.png} - Cel. Jeżeli gracz tu dotrze epizod się kończy a gra rozpoczyna się od nowa\newline
+
 \subsection{Reprezentacja stanu gry}
 
-Przedstawienie sposobu reprezentacji stanu gry jako liczba naturalna i dlaczego pomoże to w implementacji Q-Tabeli
+Stan gry przechowywany jest jako tabela dwuwymiarowa zawierająca liczby naturalne. Każda liczba reprezentuje obiekt na planszy. Puste pole oznaczane jest jako 0, monety oznaczane są liczbami 1-9 w zależności od ich wartości, podobnie złe monety od 11-19, wyjście jako 20, gracz 21. Przykładowa plansza 3x3 może więc wyglądać tak:
+
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+\hline
+20 & 0 & 5 \\
+\hline
+0 & 0 & 0 \\
+\hline
+15 & 0 & 21 \\
+\hline
+\end{tabular}
+\newline
+\end{center} 
+
+Odpowiada to takiemu stanowi planszy:
+
+\includegraphics[width=45mm]{przyklad3.png}
 
 \subsection{Implementacja Q-Tabeli}
 
-Przedstawienie implementacji Q-Tabeli która nie wymaga tablicy długości milionów komórek, zamiast tego użycie hashmapy
+Najpierw zajmiemy się stworzeniem Q-Tabeli. Przypomnijmy sobie szablon jak powinna ona wyglądać:
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| }
+\hline
+Stan /  Akcja & Akcja 1 & Akcja 2 & Akcja 3 & Akcja 4 \\
+\hline
+Stan 1 & \small{1} & \small{6} & \small{-3} & \small{5} \\
+\hline
+Stan 2 & \small{4} & \small{1} & \small{0} & \small{-10} \\
+\hline
+Stan 3 & \small{-8} & \small{3} & \small{6} & \small{0} \\
+\hline
+Stan 4 & \small{2} & \small{0} & \small{-1} & \small{7} \\
+\hline
+Stan 5 & \small{0} & \small{-5} & \small{2} & \small{4} \\
+\hline 
+\end{tabular}
+\newline
+\end{center} 
+
+W tym momencie napotkujemy problem. Nasze stany to tablice dwuwymiarowe, a nie liczby naturalne, które mogą służyć za indeksy Stan 1, Stan 2 itd.. Czy nie byłoby wygodniej gdybyśmy mogli przedstawić tę tablicę jako liczbę naturalną? Otóż jest na to pewien sposób. Wykorzystamy fakt że w tablicy przechowujemy jedynie liczby naturalne. Wyobraźmy sobie, że zamieniamy tę tablicę 2-wymiarową na 1-wymiarową, ustawiając kolejne rzędy obok siebie:
+\newline \newline Taką tablicę
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+\hline
+20 & 0 & 5 \\
+\hline
+0 & 0 & 0 \\
+\hline
+15 & 0 & 21 \\
+\hline
+\end{tabular}
+\end{center} 
+Zamieniamy w taką
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c|c|c|c|c| }
+\hline
+20 & 0 & 5 & 0 & 0 & 0 & 15 & 0 & 21 \\
+\hline
+\end{tabular}
+\newline
+\end{center} 
+
+Teraz potraktujmy to jako jedną dużą liczbę. Ale chwila, nie możemy uznać kolejnych komórek za cyfry, są w nich elementy większe od 9. Tak, ale nik nie powiedział że ta liczba musi być w systemie dziesiętnym! Weźmy największą wartość w tej tablicy i załóżmy że działamy w systemie liczbowym o 1 większym od niej. (tutaj 22). Teraz potraktujmy to jako jedną liczbę w tym systemie. Nastepnie obliczamy jest wartość w systemie dziesiętnym i mamy naszą unikalną liczbę naturalną reprezentującą stan gry. Dla powyższej tablicy jest to:
+\[20*22^8 + 5*22^6 + 15*22^2 + 21 = 1098084377521\]
+Tak, jest to duża liczba, ale na szczęście komputery mają to do siebie że dobrze radzą sobie z dużymi liczbami, a zwłaszcza ich mnożeniem i dodawaniem.
+\newline \newline Nie będziemy oczywiście tworzyć tabeli która ma miliardy indeksów. Zamiast tego użyjemy mapy haszującej. Przypisuje ona pewnemu kluczowi jakąś konkretną wartość. W naszym przypadku kluczem będzie para (stan, akcja). Stan przedstawiamy sposobem opisanym powyżej. Akcjami jest krok w górę, prawo, dół lub lewo. Oznaczamy je odpowienio liczbami \(0, 1, 2, 3\)
+Na przykład, dla naszej planszy:
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+\hline
+20 & 0 & 5 \\
+\hline
+0 & 0 & 0 \\
+\hline
+15 & 0 & 21 \\
+\hline
+\end{tabular}
+\end{center} 
+Jeżeli w tym stanie zrobienie kroku w górę byłoby warte 7 punktów, w naszej mapie haszującej reprezentującą Q-Tabelę wyglądałoby to tak:
+\[\{ (1098084377521, 0) : 7 \}\]
+A co jeżeli chcemy odczytać wartośc której jeszcze w mapie nie ma? Z definicji wszystkie wartości w Q-Tabeli są inicjalizowane na 0, więc wtedy po prostu zwracamy 0.
 
 \subsection{Nagrody}
 
