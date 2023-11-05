@@ -160,15 +160,11 @@ A tak wygląda przykładowy wykres dla metody geometrycznej:
 
 \subsection{"Catch the coins"}
 
-Opis zaimplementowanej gry "Catch the coins" oraz zauważonych problemów z losowością. Opis celu gry i dlaczego akurat taką. Parę klatek z gry, wykorzystane technologie.
-
-Sprawdźmy teraz czy ta cała teoria ma swoje odzwierciedlenie w rzeczywistości. Do tego celu posłuży nam gra "Catch the coins".
+Sprawdźmy teraz czy ta cała teoria ma swoje odzwierciedlenie w rzeczywistości. Do tego celu posłuży nam stworzona specjalnie do tego celu gra "Catch the coins".
 Pierwsza wersja gry polegała na łapaniu spadających monet. Gracz znajdował się na dole ekranu, a z góry losowo spadałyby monety. Celem gry było złapanie jak najwięcej monet w określonym czasie. Dlaczego więc zrezygnowano z tej wersji gry? Losowość.
-Uczenie przez wzmacnianie bardzo słabo radzi sobie z losowością. Przypomijmy sobie jak aktualizuje się wartości w Q-Tabeli.
-
+Uczenie przez wzmacnianie bardzo słabo radzi sobie z losowością. Dlaczeo? Przypomijmy sobie jak aktualizuje się wartości w Q-Tabeli:
 \[ Q(s, a) =  (1 - \alpha )*Q(s, a) + \alpha * ( r(s, a) + \gamma * \max_{a'}Q(s', a') )\]
-
-Problemem jest moment, gdy musimy "podejrzeć" najlepszą akcję w następnym stanie. Polega to na fakcie, że w danym stanie ta sama akcja zawsze prowadzi to takiego samego stanu. Jeżeli jednak gra ma elementy losowe, nie możemy tego przewidzieć z absolutną pewnością. Z tego powodu ta metoda nie sprawdzi się w tej sytuacji. Druga wersja gry została stworzona aby nie mieć tego problemu. Innymi słowy, jest całkowicie deterministyczna.
+\newline Problemem jest moment, gdy musimy "podejrzeć" najlepszą akcję w następnym stanie. Polegamy wtedy na fakcie, że w danym stanie ta sama akcja zawsze prowadzi to takiego samego stanu. Jeżeli jednak gra ma elementy losowe, nie możemy tego przewidzieć z absolutną pewnością. Z tego powodu ta metoda nie sprawdzi się w tej sytuacji. Druga wersja gry została stworzona aby nie mieć tego problemu. Innymi słowy, jest całkowicie deterministyczna.
 \newline \newline
 Nowa wersja gry rozgrywa się na planszy m x n. Gracz startuje w wyznaczonym miejscu na tej planszy. Na planszy znajduje się również pole wyjściowe, do którego gracz ma za zadanie dojść w jak najmniejszej liczbie kroków, poruszając się w górę, dół, prawo lub lewo jedno pole co ruch. Na planszy znajdują się również inne obiekty, mianowicie "dobre" i "złe" monety. Gracz dostaje punkty jeżeli zbierze dobrą monetę, oraz traci punkty jeżeli zbierze złą monetę. Zadaniem gracza jest więc zebranie dobrych monet, unikanie złych oraz dojście do celu w jak najmniejszej liczbie kroków.
 \newline Przykładowe plansze startowe: \newline
@@ -220,10 +216,9 @@ Stan 4 & \small{2} & \small{0} & \small{-1} & \small{7} \\
 Stan 5 & \small{0} & \small{-5} & \small{2} & \small{4} \\
 \hline 
 \end{tabular}
-\newline
+\newline \newline
 \end{center} 
-
-W tym momencie napotkujemy problem. Nasze stany to tablice dwuwymiarowe, a nie liczby naturalne, które mogą służyć za indeksy Stan 1, Stan 2 itd.. Czy nie byłoby wygodniej gdybyśmy mogli przedstawić tę tablicę jako liczbę naturalną? Otóż jest na to pewien sposób. Wykorzystamy fakt że w tablicy przechowujemy jedynie liczby naturalne. Wyobraźmy sobie, że zamieniamy tę tablicę 2-wymiarową na 1-wymiarową, ustawiając kolejne rzędy obok siebie:
+ W tym momencie napotkujemy problem. Nasze stany to tablice dwuwymiarowe, a nie liczby naturalne, które mogą służyć za wartości w tabeli ospowiadające Stan 1, Stan 2 itd. Czy nie byłoby wygodniej gdybyśmy mogli przedstawić stan gry, czyli tablicę dwuwymairową jako liczbę naturalną? Otóż jest na to pewien sposób. Wykorzystamy fakt że w tablicy przechowujemy jedynie liczby naturalne. Wyobraźmy sobie, że zamieniamy tę tablicę 2-wymiarową na 1-wymiarową, ustawiając kolejne rzędy obok siebie:
 \newline \newline Taką tablicę
 \begin{center}
 \begin{tabular}{ |c|c|c| }
@@ -246,9 +241,10 @@ Zamieniamy w taką
 \newline
 \end{center} 
 
-Teraz potraktujmy to jako jedną dużą liczbę. Ale chwila, nie możemy uznać kolejnych komórek za cyfry, są w nich elementy większe od 9. Tak, ale nik nie powiedział że ta liczba musi być w systemie dziesiętnym! Weźmy największą wartość w tej tablicy i załóżmy że działamy w systemie liczbowym o 1 większym od niej. (tutaj 22). Teraz potraktujmy to jako jedną liczbę w tym systemie. Nastepnie obliczamy jest wartość w systemie dziesiętnym i mamy naszą unikalną liczbę naturalną reprezentującą stan gry. Dla powyższej tablicy jest to:
+Teraz potraktujmy to jako jedną dużą liczbę. Ale chwila, nie możemy uznać kolejnych komórek za cyfry, są w nich elementy większe od 9. Tak, ale nikt nie powiedział że ta liczba musi być w systemie dziesiętnym! Weźmy największą wartość w tej tablicy i załóżmy że działamy w systemie liczbowym o 1 większym od niej. (tutaj 22). Teraz potraktujmy tę tablicę jako jedną liczbę w tym systemie, gdzie kolejne komórko odpowiadają cyfrom w systemie o podstawie 22. Nastepnie obliczamy wartość tej liczby w systemie dziesiętnym i mamy naszą unikalną liczbę naturalną reprezentującą stan gry. Dla powyższej tablicy jest to:
 \[20*22^8 + 5*22^6 + 15*22^2 + 21 = 1098084377521\]
 Tak, jest to duża liczba, ale na szczęście komputery mają to do siebie że dobrze radzą sobie z dużymi liczbami, a zwłaszcza ich mnożeniem i dodawaniem.
+\newline \newline Skąd jednak wiemy, że ta liczba jest unikalna? Czy mamy pewność, nie będzie jakiegoś innego ustawienia planszy, które da ten sam wynik? Cóż, liczby naturalne w dowolnym systemie są równe, wtedy i tylko wtedy gdy ich cyfry na kolejnych pozycjach są równe. Oznacza to że każda plansza reprezentuje unikalną liczbę w systemie 22-kowym. Można również łatwo zauważyć, że każda liczba w systemie o podstawie 22 odpowiada dokładnie jednej liczbie w systemie dziesiętnym. Można powiedzieć że funkcja zamieniająca liczby naturalne z systemu o podstawie 22 na system o podstawie 10 jest bijekcją.
 \newline \newline Nie będziemy oczywiście tworzyć tabeli która ma miliardy indeksów. Zamiast tego użyjemy mapy haszującej. Przypisuje ona pewnemu kluczowi jakąś konkretną wartość. W naszym przypadku kluczem będzie para (stan, akcja). Stan przedstawiamy sposobem opisanym powyżej. Akcjami jest krok w górę, prawo, dół lub lewo. Oznaczamy je odpowienio liczbami \(0, 1, 2, 3\)
 Na przykład, dla naszej planszy:
 \begin{center}
@@ -265,14 +261,22 @@ Na przykład, dla naszej planszy:
 Jeżeli w tym stanie zrobienie kroku w górę byłoby warte 7 punktów, w naszej mapie haszującej reprezentującą Q-Tabelę wyglądałoby to tak:
 \[\{ (1098084377521, 0) : 7 \}\]
 A co jeżeli chcemy odczytać wartośc której jeszcze w mapie nie ma? Z definicji wszystkie wartości w Q-Tabeli są inicjalizowane na 0, więc wtedy po prostu zwracamy 0.
+\newline \newline Podsumowując, jeżeli chcielibyśmy wpisać do Q-Tablei wartość W1 w polu (Stan 1, Akcja 1), to najpierw zamieniamy ten stan na liczbę naturalną S1 wcześniej przedstawionym sposobem, Akcję 1 na liczbę A1 od 0 do 3 w zależności od Akcji, po czym zapisujemy element \{(S1, A1) :  W1\} do mapy haszującej reprezentującej Q-Tabelę.
 
 \subsection{Nagrody}
 
-Opis za co i dlaczego agent (gracz) dostaje nagrody oraz kary
+Agent otrzymuje nagrodę lub karę po wykonaniu ruchu w zależności na jake pole wejdzie. Wartości nagród to:
+\newline Dobra moneta:  100 do 900 punktów
+\newline Zła moneta: -100 do -900 punktów
+\newline Cel: 1000 punktów
+\newline \newline A ile punktów powinien dostawać agent za wejście na puste pole? Możnaby pomyśleć że 0. Nie jest to jednak idealne rozwiązanie. Dlaczego? W pewnych sytuacjach prowadzi to do trwania epizodu w nieskończoność. Weźmy dla przykładu taką sytuację: \newline
+\includegraphics{przyklad4.png} \newline
+Załóżmy przez chwilę, że cel ma mniejszą nagrodę niż zła moneta karę. Tutaj agent powinien zebrać jedną złą monetę aby dojść do wyjścia, pomimo faktu że straci punkty, gdyż dojście do wyjścia jest ostatecznym celem gry. Co jednak się stanie? Agent będzie chodził w dolnym wierszu w prawo i lewo w nieskończoność. Dlaczego? Jeżeli nagroda za wejście na puste pole wynosi 0, to chodząc cały czas na puste pola, suma nagród będzie ciągle wynosić 0. Jest to więcej niż nagroda jaką dostałby za zebranie złej monety i dojście do celu.
+\newline Co się stanie jednak, jeżeli za wejście na puste pole damy karę -1 punkt? Wtedy chodzenie w nieskończoność na puste pola nie będzie już optymalną strategią. Jest to dlatego, ponieważ z każdym krokiem tracimy 1 punkt. W końcu suma tych straconych punktów będzie większa od punktów które stracilibyśmy idąc do celu. Można to sobie wyobrazić tak jakby agent chodził po rozgrzanych węglach lub po zbitym szkle. Będzie wolał stracić punkty teraz i skończyć epizod, niż tracić powoli punkty w nieskończoność.
 
 \subsection{Program w całości}
 
-Przedstwaienie flow chart działania algorytmu, opisanie każdego kroku.
+\includegraphics[scale=0.6]{flowchart.png}
 
 \section{Wyniki}
 
