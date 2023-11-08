@@ -148,11 +148,12 @@ Najlepiej byłoby gdybyśmy na początku uczenia wybierali akcje losowo (nazywam
 
 Zastosujemy kolejny parametr, który nazwiemy "współczynnikim eksploracji" (ang. "exploration rate"). Oznaczymy go grecką literą \(\epsilon\) (epsilon). Podobnie jak pozostałe wcześniej użyte parametry, przyjmuje on wartość od 0 do 1. Jego zastosowanie jest bardzo proste - przed wyborem akcji losujemy liczbę \(x\) od 0 do 1. Jeżeli \(x\) < \(\epsilon\) wtedy wybieramy losową akcję za wszystkich możliwych, w przeciwnym wypadku wybieramy akcję o największej wartości. Można zauważyć że dla \(\epsilon = 1\) zawsze będziemy wybierać losowe akcje, dla \(\epsilon = 0\) zawsze będziemy wybierać najlepsze akcje, a dla np. \(\epsilon = 0.5\) będziemy w połowie przypadków wybierać losową akcję, a w połowie najlepszą akcję.
 
-Ideą jest więc aby zacząć od wysokiego współczynnika eksploracji \(\epsilon\), i z czasem uczenia stopniowo go zmniejszać. Jest na to wiele sposobów ale omówimy sobie dwa - liniowy oraz geometryczny. W sposobie liniowym z każdą iteracją odejmujemy pewną wartość od współczynnika exploracji. 
+Ideą jest więc aby zacząć od wysokiego współczynnika eksploracji \(\epsilon\), i z czasem uczenia stopniowo go zmniejszać. Jest na to wiele sposobów ale omówimy sobie dwa - liniowy oraz geometryczny. W sposobie liniowym z każdą iteracją odejmujemy pewną wartość od współczynnika exploracji: \(\epsilon_{i+1} = \epsilon_{i} - x\), gdzie \(x =  \frac{\epsilon_{0} - \epsilon_{N}}{N}\). N to docelowa liczba iteracji podczas całego uczenia. 
 \newline \newline Tak może wyglądać przykładowy wykres przedstawiający wartość współczynnika eksploracji zależnie od postępu nauczania algorytmu używając metody liniowej:
 \newline \includegraphics{lin.png}
 \newline
-A tak wygląda przykładowy wykres dla metody geometrycznej:
+W metodzie geometrycznej zamiast tego mnożymy współczynnik eksploracji przez pewną liczbę: \(\epsilon_{i+1} = \epsilon_{i} * x\), gdzie \(x = (\frac{e_{N}}{e_{0}})^\frac{1}{N} \). N to docelowa liczba iteracji podczas całego uczenia. 
+\newline Tak wygląda przykładowy wykres dla metody geometrycznej:
 \newline \includegraphics{geo.png}
 \newline Można zauważyć że w metodzie geometrycznej dużo więcej czasu algorytm spędza z niższym współczynnikiem eksploracji. Oznacza to że szybciej porzuca strategię odkrywania środowiska i skupia się na doskonaleniu odnalezionego już rozwiązania. W przedstawionych przykładach wybrałem startowy \(\epsilon = 1\) i końcowy \(\epsilon = 0\), ale można dobrać dowolny przedział, zależnie od potrzeb i warunków środowiska.  
 
@@ -205,15 +206,15 @@ Najpierw zajmiemy się stworzeniem Q-Tabeli. Przypomnijmy sobie szablon jak powi
 \hline
 Stan /  Akcja & Akcja 1 & Akcja 2 & Akcja 3 & Akcja 4 \\
 \hline
-Stan 1 & \small{1} & \small{6} & \small{-3} & \small{5} \\
+Stan 1 & \small{0} & \small{0} & \small{0} & \small{0} \\
 \hline
-Stan 2 & \small{4} & \small{1} & \small{0} & \small{-10} \\
+Stan 2 & \small{0} & \small{0} & \small{0} & \small{0} \\
 \hline
-Stan 3 & \small{-8} & \small{3} & \small{6} & \small{0} \\
+Stan 3 & \small{0} & \small{0} & \small{0} & \small{0} \\
 \hline
-Stan 4 & \small{2} & \small{0} & \small{-1} & \small{7} \\
+Stan 4 & \small{0} & \small{0} & \small{0} & \small{0} \\
 \hline
-Stan 5 & \small{0} & \small{-5} & \small{2} & \small{4} \\
+Stan 5 & \small{0} & \small{0} & \small{0} & \small{0} \\
 \hline 
 \end{tabular}
 \newline \newline
@@ -243,7 +244,7 @@ Zamieniamy w taką
 
 Teraz potraktujmy to jako jedną dużą liczbę. Ale chwila, nie możemy uznać kolejnych komórek za cyfry, są w nich elementy większe od 9. Tak, ale nikt nie powiedział że ta liczba musi być w systemie dziesiętnym! Weźmy największą wartość w tej tablicy i załóżmy że działamy w systemie liczbowym o 1 większym od niej. (tutaj 22). Teraz potraktujmy tę tablicę jako jedną liczbę w tym systemie, gdzie kolejne komórko odpowiadają cyfrom w systemie o podstawie 22. Nastepnie obliczamy wartość tej liczby w systemie dziesiętnym i mamy naszą unikalną liczbę naturalną reprezentującą stan gry. Dla powyższej tablicy jest to:
 \[20*22^8 + 5*22^6 + 15*22^2 + 21 = 1098084377521\]
-Tak, jest to duża liczba, ale na szczęście komputery mają to do siebie że dobrze radzą sobie z dużymi liczbami, a zwłaszcza ich mnożeniem i dodawaniem.
+W ten sposób uzało nam się przedstawić tablicę dwuwymiarową reprezentującą stan gry jako liczbę naturalną! Tak, jest to duża liczba, ale na szczęście komputery mają to do siebie że dobrze radzą sobie z dużymi liczbami, a zwłaszcza ich mnożeniem i dodawaniem.
 \newline \newline Skąd jednak wiemy, że ta liczba jest unikalna? Czy mamy pewność, nie będzie jakiegoś innego ustawienia planszy, które da ten sam wynik? Cóż, liczby naturalne w dowolnym systemie są równe, wtedy i tylko wtedy gdy ich cyfry na kolejnych pozycjach są równe. Oznacza to że każda plansza reprezentuje unikalną liczbę w systemie 22-kowym. Można również łatwo zauważyć, że każda liczba w systemie o podstawie 22 odpowiada dokładnie jednej liczbie w systemie dziesiętnym. Można powiedzieć że funkcja zamieniająca liczby naturalne z systemu o podstawie 22 na system o podstawie 10 jest bijekcją.
 \newline \newline Nie będziemy oczywiście tworzyć tabeli która ma miliardy indeksów. Zamiast tego użyjemy mapy haszującej. Przypisuje ona pewnemu kluczowi jakąś konkretną wartość. W naszym przypadku kluczem będzie para (stan, akcja). Stan przedstawiamy sposobem opisanym powyżej. Akcjami jest krok w górę, prawo, dół lub lewo. Oznaczamy je odpowienio liczbami \(0, 1, 2, 3\)
 Na przykład, dla naszej planszy:
@@ -281,6 +282,20 @@ Załóżmy przez chwilę, że cel ma mniejszą nagrodę niż zła moneta karę. 
 \section{Wyniki}
 
 Przestawienie wyników działania algorytmu, wykresy pokazujące działanie i postępy w wynikach na różnych mapach startowych. Przedstawienie wpływu parametrów takich jak współczynnik uczenia i współczynnik eksploracji na skutecznośc uczenia.
+
+Teraz jak wiemy już jak działa algorytm nauczania przez wzmacnianie oraz gra na której będziemy go testować, sprawdźmy jego skuteczność, zaczynając od prostych poziomów.
+\newline 
+\newline Plansza 1
+\newline Liczba ruchów = 20000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.01\) \newline
+
+\includegraphics[scale=0.8]{testy/plansza1.png} \newline
+\includegraphics[scale=0.8]{testy/wykres1.png}
+
+
 
 \section{Podsumowanie i zastosowania}
 
