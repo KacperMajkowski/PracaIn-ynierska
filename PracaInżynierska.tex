@@ -170,7 +170,7 @@ Uczenie przez wzmacnianie bardzo słabo radzi sobie z losowością. Dlaczeo? Prz
 Nowa wersja gry rozgrywa się na planszy m x n. Gracz startuje w wyznaczonym miejscu na tej planszy. Na planszy znajduje się również pole wyjściowe, do którego gracz ma za zadanie dojść w jak najmniejszej liczbie kroków, poruszając się w górę, dół, prawo lub lewo jedno pole co ruch. Na planszy znajdują się również inne obiekty, mianowicie "dobre" i "złe" monety. Gracz dostaje punkty jeżeli zbierze dobrą monetę, oraz traci punkty jeżeli zbierze złą monetę. Zadaniem gracza jest więc zebranie dobrych monet, unikanie złych oraz dojście do celu w jak najmniejszej liczbie kroków.
 \newline Przykładowe plansze startowe: \newline
 \includegraphics[width=70mm]{przyklad1.png}
-\includegraphics[width=70mm]{przyklad2.png} \newline
+\includegraphics[width=70mm]{przyklad2.png} \newline \newline
 \includegraphics[width=20mm]{player.png} - Gracz (Agent). Jego zadaniem jest zbieranie dobrych monet, unikanie złych monet i dojście do celu \newline
 \includegraphics[width=20mm]{good_coin.png} - Dobra moneta \newline
 \includegraphics[width=20mm]{bad_coin.png} - Zła moneta\newline
@@ -267,8 +267,8 @@ A co jeżeli chcemy odczytać wartośc której jeszcze w mapie nie ma? Z definic
 \subsection{Nagrody}
 
 Agent otrzymuje nagrodę lub karę po wykonaniu ruchu w zależności na jake pole wejdzie. Wartości nagród to:
-\newline Dobra moneta:  100 do 900 punktów
-\newline Zła moneta: -100 do -900 punktów
+\newline Dobra moneta:  100 do 1000 punktów
+\newline Zła moneta: -100 do -1000 punktów
 \newline Cel: 1000 punktów
 \newline \newline A ile punktów powinien dostawać agent za wejście na puste pole? Możnaby pomyśleć że 0. Nie jest to jednak idealne rozwiązanie. Dlaczego? W pewnych sytuacjach prowadzi to do trwania epizodu w nieskończoność. Weźmy dla przykładu taką sytuację: \newline
 \includegraphics{przyklad4.png} \newline
@@ -284,16 +284,56 @@ Załóżmy przez chwilę, że cel ma mniejszą nagrodę niż zła moneta karę. 
 Przestawienie wyników działania algorytmu, wykresy pokazujące działanie i postępy w wynikach na różnych mapach startowych. Przedstawienie wpływu parametrów takich jak współczynnik uczenia i współczynnik eksploracji na skutecznośc uczenia.
 
 Teraz jak wiemy już jak działa algorytm nauczania przez wzmacnianie oraz gra na której będziemy go testować, sprawdźmy jego skuteczność, zaczynając od prostych poziomów.
-\newline 
-\newline Plansza 1
-\newline Liczba ruchów = 20000
+
+\subsection{Plansza 1 - Na początek coś łatwego}
+\includegraphics[scale=0.73]{testy/plansza1.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 20000
 \newline \(\alpha = 0.95\)
 \newline \(\gamma = 0.99\)
 \newline \(\epsilon_{start} = 1\)
-\newline \(\epsilon_{koniec} = 0.01\) \newline
+\newline \(\epsilon_{koniec} = 0.01\) \newpage
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza1trasa.png} \newline \newline
+Widać że agent znalazł optymalną drogę do celu. Oznacza to że uczenie przez wzmacnianie faktycznie działa, przynajmniej dla takich prostych problemów jak ten. Ale teraz nasuwają się kolejne pytania. Jak szybko znalazł tę drogę? Czy może to akurat był przypadek że udało mu się znaleść optymalne rozwiązanie? Aby to rozwiązać, program zapisuje dane podczas okresu uczenia. Mianowicie, po zakończeniu każdego epizodu zapisywana jest liczba punktów zdobytych podczas danego epizodu. Następnie tworzony jest wykres pokazujący jak te wyniki epizodów zmieniały się z czasem uczenia. \newpage
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres1.png}
+\newline Ten wykres jest trochę chaotyczny, ale można z niego wiele odczytać jeżeli poznamy dokładne wartości nagród agenta: \newline
+\newline Ruch na puste pole: -10 pkt
+\newline Zebranie dobrej monety: +1000 pkt
+\newline Dojście do wyjścia: +5000 pkt
+\newline \newline Zauważmy, że wyniki są podzielone na 3 kategorie. Około 5 tysięcy punktów, około 6 tysięcy punktów i około 7 tysięcy punktów. Odpowiadają one odpowiednio epizodom, gdy agent zebrał 0, 1 i 2 dobre monety. Widać że agent od około epizodu 100 zawsze zbierał 2 monety, potem różnice w wynikach wynikają jedynie długością drogi jaką pokonał agent.
+\newpage
+\subsection{Plansza 2 - Przeszkoda}
+\includegraphics[scale=0.73]{testy/plansza2.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 100000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.01\) \newline \newline
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza2trasa.png} \newline \newline
+Widać że agent nie znalazł optymalnej drogi, gdzie mógłby zebrać obie monety, pomimo zwiększenia limitu ruchów do 100000. Ma to jednak sens. Dodaliśmy 5 dodatkowych obiektów. Pamiętajmy, że jeżeli agent zbierze złą (czerwoną) monetę, zmienia się stan planszy i musi uczyć się dróg do monet i wyjścia na nowo. Od momentu zebrania monety, każdy stan będzie dla niego nowy. Dodając 5 nowych monet dodajemy wiele ich kombinacji i agent będzie musiał się nauczyć, jakie są najlepsze kroki przy każdej z nich. Kombinacji samych czerwonych monet jest \(2^5 = 32\). Możliwe jest, że agent nie miał wystarczająco czasu, żeby nauczyć się tej części planszy, więc wybrał łatwiejszą opcję wzięcia lewej monety i pójścia do wyjścia. Tak prezentuje się wykres zdobytych punktów przez agenta: \newline \newline
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres2.png}
+\newline \newline Widzimy że wraz z tokiem nauczania agent zdobywał coraz to lepsze wyniki, aż do samego końca. Można więc podejrzewać, że jeśli dalibyśmy agentowi więcej czasu na naukę, w końcu znalazłby optymalną ścieżkę. Spróbujmy jednak najpierw przetestować, czy agent poradzi sobie z odrobinę prostrzym problemem.
 
-\includegraphics[scale=0.8]{testy/plansza1.png} \newline
-\includegraphics[scale=0.8]{testy/wykres1.png}
+\subsection{Plansza 3 -Uproszczona przeszkoda}
+\includegraphics[scale=0.73]{testy/plansza3.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 500000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.01\) \newline \newline
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza3trasa.png} \newline \newline
+Widzimy że agent poradził sobie z tym uproszczonym problemem. Oznacza to że niezbędzny czas uczenia dla trudniejszej wersji został niedoszacowany. \newline \newline
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres3.png}
+\newline \newline
+
 
 
 
