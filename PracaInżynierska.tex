@@ -314,13 +314,58 @@ Liczba ruchów = 100000
 \newline \(\epsilon_{koniec} = 0.01\) \newline \newline
 \textbf{\Large{Znaleziona trasa}} \newline \newline
 \includegraphics[scale=0.73]{testy/plansza2trasa.png} \newline \newline
-Widać że agent nie znalazł optymalnej drogi, gdzie mógłby zebrać obie monety, pomimo zwiększenia limitu ruchów do 100000. Ma to jednak sens. Dodaliśmy 5 dodatkowych obiektów. Pamiętajmy, że jeżeli agent zbierze złą (czerwoną) monetę, zmienia się stan planszy i musi uczyć się dróg do monet i wyjścia na nowo. Od momentu zebrania monety, każdy stan będzie dla niego nowy. Dodając 5 nowych monet dodajemy wiele ich kombinacji i agent będzie musiał się nauczyć, jakie są najlepsze kroki przy każdej z nich. Kombinacji samych czerwonych monet jest \(2^5 = 32\). Możliwe jest, że agent nie miał wystarczająco czasu, żeby nauczyć się tej części planszy, więc wybrał łatwiejszą opcję wzięcia lewej monety i pójścia do wyjścia. Tak prezentuje się wykres zdobytych punktów przez agenta: \newline \newline
+Widać że agent nie znalazł optymalnej drogi, gdzie mógłby zebrać obie monety, pomimo zwiększenia limitu ruchów do 100000. Ma to jednak sens. Dodaliśmy 5 dodatkowych obiektów. Pamiętajmy, że jeżeli agent zbierze złą (czerwoną) monetę, zmienia się stan planszy i musi uczyć się dróg do monet i wyjścia na nowo. Od momentu zebrania monety, każdy stan będzie dla niego nowy. Dodając 5 nowych monet dodajemy wiele ich kombinacji i agent będzie musiał się nauczyć, jakie są najlepsze kroki przy każdej z nich. Kombinacji samych czerwonych monet (zebranych lub nie zebranych) jest \(2^5 = 32\). Możliwe jest, że agent nie miał wystarczająco czasu, żeby nauczyć się tej części planszy, więc wybrał łatwiejszą opcję wzięcia lewej monety i pójścia do wyjścia. Tak prezentuje się wykres zdobytych punktów przez agenta: \newline \newline
 \textbf{\Large{Zdobyte punkty}} \newline
 \includegraphics[scale=0.9]{testy/wykres2.png}
 \newline \newline Widzimy że wraz z tokiem nauczania agent zdobywał coraz to lepsze wyniki, aż do samego końca. Można więc podejrzewać, że jeśli dalibyśmy agentowi więcej czasu na naukę, w końcu znalazłby optymalną ścieżkę. Spróbujmy jednak najpierw przetestować, czy agent poradzi sobie z odrobinę prostrzym problemem.
 
-\subsection{Plansza 3 -Uproszczona przeszkoda}
+\subsection{Plansza 3 - Uproszczona przeszkoda}
 \includegraphics[scale=0.73]{testy/plansza3.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 500000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.2\) \newline \newline
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza3trasa.png} \newline \newline
+Widzimy że agent poradził sobie z tym uproszczonym problemem. Oznacza to że niezbędzny czas uczenia dla trudniejszej wersji został niedoszacowany. Jest jeszcze jednak inne możliwe wyjaśnienie. Na Planszy 2 agent aby zebrać monetę w prawym górnym rogu musiał najpierw przejść przez jedno "wąskie gardło", a następnie wyjść przez drugie. Bardzo ogranicza to zakres optymalnych rozwiązań.  \newline \newline
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres3.png}
+\newline \newline
+
+\subsection{Plansza 4 - Slalom}
+\includegraphics[scale=0.73]{testy/plansza4.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 500000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.2\) \newline \newline
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza4trasa.png} \newline \newline
+Widać że agent poradził sobie z taką planszą. Od tego momentu dla przejrzystości wykresy zostaną przedstawione w formie punktów. Można zauważyć jak agent coraz rzadziej wybierał te gorsze drogi i coraz częściej te lepsze. Poziome "paski" odpowiadają ilości zebranych złych monet podczas epizodu. \newline \newline
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres4.png}
+\newline \newline
+
+\subsection{Plansza 5 - Labirynt}
+\includegraphics[scale=0.73]{testy/plansza5.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 500000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.2\) \newline \newline
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza5trasa.png} \newline \newline
+Mogłoby się zdawać że bardziej skomplikowane mapy będą wymagały dłuższego uczenia. Jedak ten eksperyment wskazuje na coś dokładnie odwrotnego. Wygląda na to że większe ograniczenia lepiej nakierowują agenta na lepszą trasę. \newline \newline
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres5.png}
+\newline \newline
+
+\subsection{Plansza 6 - Labirynt 2}
+\includegraphics[scale=0.73]{testy/plansza6.png} \newline
 \textbf{Parametry:}
 Liczba ruchów = 500000
 \newline \(\alpha = 0.95\)
@@ -328,13 +373,26 @@ Liczba ruchów = 500000
 \newline \(\epsilon_{start} = 1\)
 \newline \(\epsilon_{koniec} = 0.01\) \newline \newline
 \textbf{\Large{Znaleziona trasa}} \newline \newline
-\includegraphics[scale=0.73]{testy/plansza3trasa.png} \newline \newline
-Widzimy że agent poradził sobie z tym uproszczonym problemem. Oznacza to że niezbędzny czas uczenia dla trudniejszej wersji został niedoszacowany. \newline \newline
+\includegraphics[scale=0.73]{testy/plansza6trasa.png} \newline \newline
+Mogłoby się zdawać że bardziej skomplikowane mapy będą wymagały dłuższego uczenia \newline \newline
 \textbf{\Large{Zdobyte punkty}} \newline
-\includegraphics[scale=0.9]{testy/wykres3.png}
+\includegraphics[scale=0.9]{testy/wykres6.png}
 \newline \newline
 
-
+\subsection{Plansza 7 - Przeszkoda 2}
+\includegraphics[scale=0.73]{testy/plansza7.png} \newline
+\textbf{Parametry:}
+Liczba ruchów = 5000000
+\newline \(\alpha = 0.95\)
+\newline \(\gamma = 0.99\)
+\newline \(\epsilon_{start} = 1\)
+\newline \(\epsilon_{koniec} = 0.2\) \newline \newline
+\textbf{\Large{Znaleziona trasa}} \newline \newline
+\includegraphics[scale=0.73]{testy/plansza7trasa.png} \newline \newline
+Mogłoby się zdawać że bardziej skomplikowane mapy będą wymagały dłuższego uczenia \newline \newline
+\textbf{\Large{Zdobyte punkty}} \newline
+\includegraphics[scale=0.9]{testy/wykres7.png}
+\newline \newline
 
 
 \section{Podsumowanie i zastosowania}
